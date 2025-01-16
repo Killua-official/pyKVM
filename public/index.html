@@ -88,6 +88,8 @@
     });
 
     video.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+
         const {x, y} = getEventCoordinates(event);
         const map = {0: 'left', 1: 'middle', 2: 'right'};
         const button = map[event.button];
@@ -102,6 +104,8 @@
     });
 
     document.addEventListener('keydown', (event) => {
+        event.preventDefault();
+
         const key = event.key.length > 1? event.key.toLowerCase() : event.key;
         sendEventData('keydown', {
             key: key,
@@ -119,6 +123,20 @@
             shift: event.shiftKey,
             alt: event.altKey
         });
+    });
+
+    const eventsToDisable = [
+        { type: 'dblclick', element: document },
+        { type: 'wheel', element: document },
+        { type: 'contextmenu', element: document },
+        { type: 'beforeunload', element: window }
+    ];
+    const unifiedHandler = (event) => {
+        event.preventDefault();
+        if (event.type === 'beforeunload') return '';
+    };
+    eventsToDisable.forEach(({ type, element }) => {
+        element.addEventListener(type, unifiedHandler);
     });
 </script>
 </body>

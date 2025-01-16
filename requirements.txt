@@ -1,0 +1,2 @@
+ch9329==1.2.7
+fastapi[standard]==0.115.6

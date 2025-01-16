@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Logger</title>
+    <style>
+        #black-box {
+            width: 500px;
+            height: 500px;
+            background-color: black;
+            margin: 50px auto;
+        }
+    </style>
+</head>
+<body>
+<div id="black-box" tabindex="0"></div>
+<script>
+    const blackBox = document.getElementById('black-box');
+
+    const logEvent = (event) => {
+        console.log(`${event.type}:`, event);
+    };
+
+    const eventTypes = [
+        'keydown', 'keyup', // Keyboard events
+        'mousedown', 'mouseup' // Mouse events
+    ];
+
+    eventTypes.forEach(eventType => {
+        // ignore mouse move event
+        if (eventType === 'mousemove' || eventType === 'keypress') {
+            return;
+        }
+        blackBox.addEventListener(eventType, logEvent);
+    });
+
+    // Ensure keyboard focus
+    blackBox.addEventListener('focus', () => console.log('focus event: Black box focused'));
+    blackBox.addEventListener('blur', () => console.log('blur event: Black box blurred'));
+</script>
+</body>
+</html>

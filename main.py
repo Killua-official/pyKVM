@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from serial import Serial
 
-serial = Serial("/dev/ttyUSB2", 9600, timeout=0.05)
+serial = Serial("/dev/ttyUSB0", 9600, timeout=0.05)
 
 app = FastAPI()
 api = FastAPI()

@@ -1,11 +1,11 @@
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from ch9329 import keyboard
 from ch9329 import mouse
 from ch9329.mouse import MouseCtrl
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from serial import Serial
 
-serial = Serial("/dev/ttyUSB0", 9600, timeout=0.05)
+serial = Serial("COM4", 9600, timeout=0.05)
 
 app = FastAPI()
 api = FastAPI()
@@ -13,44 +13,77 @@ api = FastAPI()
 app.mount("/api", api)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")
 
-
 @api.post("/keydown")
-def keydown(key: str, control: bool = False, shift: bool = False, alt: bool = False):
-    key = {"meta": "win", "capslock": "caps_lock", "arrowright": "arrow_right", "arrowleft": "arrow_left",
-           "arrowdown": "arrow_down", "arrowup": "arrow_up"}.get(key, key)
-    if key in {"shift", "control", "alt"}: return
+async def keydown(key: str, control: bool = False, shift: bool = False, alt: bool = False):
+    key_map = {
+        "meta": "win",
+        "capslock": "caps_lock",
+        "arrowright": "arrow_right",
+        "arrowleft": "arrow_left",
+        "arrowdown": "arrow_down",
+        "arrowup": "arrow_up"
+    }
+    key = key_map.get(key.lower(), key.lower())
 
-    if control and alt:
-        modifiers = ["ctrl", "alt"]
-    elif control:
-        modifiers = ["ctrl"]
-    elif alt:
-        modifiers = ["alt"]
-    else:
-        modifiers = []
+    if key in {"shift", "control", "alt"}:
+        return
 
-    keyboard.press(serial, key, modifiers)
+    allowed_keys = set("abcdefghijklmnopqrstuvwxyz0123456789 `~!@#$%^&*()-_=+[]{}|;:'\",.<>/?\\") | {
+        "enter", "backspace", "tab", "space", "escape", "arrow_left", "arrow_right",
+        "arrow_up", "arrow_down", "caps_lock", "win"
+    }
 
+    if key not in allowed_keys:
+        print(f"[WARNING] Unsupported key: {key}")
+        return
+
+    modifiers = []
+    if control:
+        modifiers.append("ctrl")
+    if shift:
+        modifiers.append("shift")
+    if alt:
+        modifiers.append("alt")
+
+    print(f"[DEBUG] KeyDown - Key: {key}, Modifiers: {modifiers}")
+    try:
+        keyboard.press(serial, key, modifiers)
+    except Exception as e:
+        print(f"[ERROR] keydown failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api.post("/keyup")
-def keyup():
-    keyboard.release(serial)
-
+async def keyup():
+    try:
+        keyboard.release(serial)
+    except Exception as e:
+        print(f"[ERROR] keyup failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api.post("/mousedown")
-def mousedown(button: MouseCtrl):
-    mouse.press(serial, button)
-
+async def mousedown(button: MouseCtrl):
+    try:
+        mouse.press(serial, button)
+    except Exception as e:
+        print(f"[ERROR] mousedown failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api.post("/mouseup")
-def mouseup():
-    mouse.release(serial)
-
+async def mouseup():
+    try:
+        mouse.release(serial)
+    except Exception as e:
+        print(f"[ERROR] mouseup failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api.post("/mousemove")
-def mousemove(x: int, y: int):
-    mouse.move(serial, x, y)
-
+async def mousemove(x: int, y: int):
+    try:
+        mouse.move(serial, x, y)
+    except Exception as e:
+        print(f"[ERROR] mousemove failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == '__main__':
-    print("Execute `fastapi dev main.py` to start the server.")
+    print("Execute `uvicorn main:app --reload` to start the server.")
+

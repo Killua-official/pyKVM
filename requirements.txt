@@ -1,3 +1,6 @@
 # ch9329==1.2.7
 git+https://github.com/tshelter/py-ch9329
 fastapi[standard]==0.115.6
+
+ch9329~=1.2.7
+pyserial~=3.5

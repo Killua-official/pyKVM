@@ -131,4 +131,35 @@ async function checkConnectionStatus() {
 
 setInterval(checkConnectionStatus, 3000);
 
+video.addEventListener('mousedown', (event) => {
+    const circle = document.createElement('div');
+    circle.className = 'click-circle';
+    circle.style.left = `${event.clientX}px`;
+    circle.style.top = `${event.clientY}px`;
+    document.getElementById('click-feedback').appendChild(circle);
+
+    setTimeout(() => {
+        circle.remove();
+    }, 500);
+});
+
+document.addEventListener('keydown', (event) => {
+    const keyBox = document.getElementById('key-feedback');
+    const key = event.key.length === 1 ? event.key : event.key.toLowerCase();
+    let combo = [];
+
+    if (event.ctrlKey) combo.push('Ctrl');
+    if (event.shiftKey) combo.push('Shift');
+    if (event.altKey) combo.push('Alt');
+    combo.push(key);
+
+    keyBox.textContent = '⌨ ' + combo.join(' + ');
+    keyBox.style.display = 'block';
+
+    clearTimeout(keyBox.hideTimeout);
+    keyBox.hideTimeout = setTimeout(() => {
+        keyBox.style.display = 'none';
+    }, 1500);
+});
+
 

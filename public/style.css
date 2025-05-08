@@ -1,7 +1,7 @@
 body, html {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow-x: hidden;
     height: 100%;
     display: flex;
     align-items: center;
@@ -61,6 +61,22 @@ body, html {
     border-radius: 6px;
     z-index: 20;
     display: none;
+}
+
+#device-info {
+    position: fixed;
+    bottom: 8px;
+    right: 12px;
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
 }
 
 video {

@@ -54,6 +54,14 @@ const throttledMouseMove = throttle((event) => {
     sendEventData('mousemove', { x, y });
 }, 15); // 15ms = ~60 FPS
 
+const deviceInfo = document.getElementById('device-info');
+
+if (deviceInfo) {
+    setTimeout(() => {
+        deviceInfo.style.opacity = '0';
+    }, 5000);
+}
+
 video.addEventListener('mousemove', throttledMouseMove);
 
 video.addEventListener('mousedown', (event) => {
@@ -175,4 +183,16 @@ document.addEventListener('keydown', (event) => {
     }, 1500);
 });
 
+async function loadDeviceInfo() {
+    try {
+        const res = await fetch('/api/device');
+        const data = await res.json();
+        const box = document.getElementById('device-info');
+        box.textContent = `${data.hostname} • ${data.os} • ${data.resolution}`;
+    } catch (err) {
+        console.warn('Device info unavailable');
+    }
+}
+
+loadDeviceInfo();
 

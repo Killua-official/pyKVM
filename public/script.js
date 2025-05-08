@@ -74,6 +74,12 @@ video.addEventListener('mouseup', () => {
 });
 
 document.addEventListener('keydown', (event) => {
+    const isAltShift = event.altKey && event.key.toLowerCase() === 'shift';
+    if (isAltShift) {
+        sendEventData('switch-language');
+        event.preventDefault();
+        return;
+    }
     const key = event.key.length === 1 ? event.key : event.key.toLowerCase();
     sendEventData('keydown', {
         key,

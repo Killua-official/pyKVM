@@ -1,5 +1,16 @@
 const video = document.getElementById('video');
 
+function throttle(func, limit) {
+    let lastCall = 0;
+    return function (...args) {
+        const now = Date.now();
+        if (now - lastCall >= limit) {
+            lastCall = now;
+            func.apply(this, args);
+        }
+    };
+}
+
 async function initializeCamera() {
     try {
         const constraints = {
@@ -38,10 +49,12 @@ function sendEventData(endpoint, params = {}) {
     fetch(url, { method: 'POST' });
 }
 
-video.addEventListener('mousemove', (event) => {
+const throttledMouseMove = throttle((event) => {
     const { x, y } = getEventCoordinates(event);
     sendEventData('mousemove', { x, y });
-});
+}, 15); // 15ms = ~60 FPS
+
+video.addEventListener('mousemove', throttledMouseMove);
 
 video.addEventListener('mousedown', (event) => {
     const buttonMap = { 0: 'left', 1: 'middle', 2: 'right' };

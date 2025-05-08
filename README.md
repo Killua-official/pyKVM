@@ -22,7 +22,7 @@ To run, you need to install dependencies:
 pip install -r requirements.txt
 ```
 
-### 2. Start the Server
+### 3. Start the Server
 And then just start the server:
 ```
 uvicorn main:app --reload

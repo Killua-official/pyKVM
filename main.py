@@ -1,3 +1,6 @@
+import platform
+import socket
+
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from ch9329 import keyboard
@@ -83,6 +86,15 @@ async def mousemove(x: int, y: int):
     except Exception as e:
         print(f"[ERROR] mousemove failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@api.get("/device")
+def get_device_info():
+    return {
+        "hostname": socket.gethostname(),
+        "os": platform.system() + " " + platform.release(),
+        "resolution": "1920x1080",
+        "connection": "USB + HDMI"
+    }
 
 @api.get("/ping")
 def ping():

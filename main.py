@@ -5,7 +5,7 @@ from ch9329 import mouse
 from ch9329.mouse import MouseCtrl
 from serial import Serial
 
-serial = Serial("COM4", 9600, timeout=0.05)
+serial = Serial("COM8", 9600, timeout=0.05)
 
 app = FastAPI()
 api = FastAPI()
@@ -83,6 +83,11 @@ async def mousemove(x: int, y: int):
     except Exception as e:
         print(f"[ERROR] mousemove failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@api.get("/ping")
+def ping():
+    return {"status": "ok"}
+
 
 if __name__ == '__main__':
     print("Execute `uvicorn main:app --reload` to start the server.")

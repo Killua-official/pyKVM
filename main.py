@@ -87,6 +87,15 @@ async def mousemove(x: int, y: int):
         print(f"[ERROR] mousemove failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api.post("/switch-language")
+async def switch_language():
+    try:
+        keyboard.press(serial, "alt", ["shift"])
+    except Exception as e:
+        print(f"[ERROR] switch-language failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api.get("/device")
 def get_device_info():
     return {
